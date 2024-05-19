@@ -29,6 +29,10 @@ npx prisma db push
 ```
 Sync the Prisma schema with the database and generate Typescript types for the Prisma client based on the schema.
 
+### Frontend:
+
+I am using [Radix UI](https://www.radix-ui.com/primitives/docs/overview/introduction) primitives with [shadcn](https://https://ui.shadcn.com/).
+
 ## T3 Stack Documentation
 
 - [Next.js](https://nextjs.org)

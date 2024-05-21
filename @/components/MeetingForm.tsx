@@ -42,7 +42,7 @@ export function MeetingForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="justify-top  h-full w-full max-w-sm space-y-8 p-10"
+        className="justify-top w-full max-w-sm space-y-8 p-10"
       >
         <FormField
           control={form.control}
@@ -71,7 +71,7 @@ export function MeetingForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button className="w-full bg-blue-800" type="submit">
           Submit
         </Button>
       </form>

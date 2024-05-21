@@ -1,7 +1,7 @@
 import "@components/ @styles/ @utils/styles/globals.css";
 
-// import { GeistSans } from "geist/font/sans";
 import { Quicksand } from "next/font/google";
+import NexusMeetLogo from "@/assets/nexusmeet.svg";
 
 const quicksand = Quicksand({ subsets: ["latin"] });
 
@@ -18,7 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={quicksand.className}>
-      <body>{children}</body>
+      <body>
+        <div className="w-full flex-col items-center justify-center">
+          <NexusMeetLogo className="mx-auto w-full max-w-96 px-20" />
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

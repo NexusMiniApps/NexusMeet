@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -21,12 +21,18 @@ const TimeSelectionGrid: React.FC<TimeSelectionGridProps> = ({
     {},
   );
   const [isDragging, setIsDragging] = useState(false);
+  const [lastToggled, setLastToggled] = useState<{
+    date: string;
+    time: string;
+  } | null>(null);
+  const isTouchDevice = useRef(false);
 
   const handleMouseDown = (
     date: string,
     time: string,
     event: React.MouseEvent | React.TouchEvent,
   ) => {
+    if (isTouchDevice.current) return;
     event.preventDefault();
     setIsDragging(true);
     toggleTimeSelection(date, time);
@@ -34,12 +40,13 @@ const TimeSelectionGrid: React.FC<TimeSelectionGridProps> = ({
 
   const handleMouseEnter = (date: string, time: string) => {
     if (isDragging) {
-      toggleTimeSelection(date, time);
+      toggleTimeSelection(date, time, true);
     }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    setLastToggled(null);
   };
 
   const handleTouchStart = (
@@ -47,7 +54,10 @@ const TimeSelectionGrid: React.FC<TimeSelectionGridProps> = ({
     time: string,
     event: React.TouchEvent,
   ) => {
-    handleMouseDown(date, time, event);
+    isTouchDevice.current = true;
+    event.preventDefault();
+    setIsDragging(true);
+    toggleTimeSelection(date, time);
   };
 
   const handleTouchMove = (
@@ -75,7 +85,21 @@ const TimeSelectionGrid: React.FC<TimeSelectionGridProps> = ({
     handleMouseUp();
   };
 
-  const toggleTimeSelection = (date: string, time: string) => {
+  const toggleTimeSelection = (
+    date: string,
+    time: string,
+    isDragOperation = false,
+  ) => {
+    if (
+      isDragOperation &&
+      lastToggled &&
+      lastToggled.date === date &&
+      lastToggled.time === time
+    ) {
+      return;
+    }
+    setLastToggled({ date, time });
+
     setSelectedTimes((prev) => {
       const timesForDate = (prev[date] ?? []) as string[];
 
@@ -89,6 +113,22 @@ const TimeSelectionGrid: React.FC<TimeSelectionGridProps> = ({
       }
     });
   };
+
+  useEffect(() => {
+    const disableScroll = (e: Event) => {
+      if (isDragging) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("wheel", disableScroll, { passive: false });
+    document.addEventListener("touchmove", disableScroll, { passive: false });
+
+    return () => {
+      document.removeEventListener("wheel", disableScroll);
+      document.removeEventListener("touchmove", disableScroll);
+    };
+  }, [isDragging]);
 
   return (
     <Table
@@ -137,6 +177,8 @@ const TimeSelectionGrid: React.FC<TimeSelectionGridProps> = ({
                 {timesOfDay.map((time) => (
                   <TableCell
                     key={time}
+                    data-date={dateString}
+                    data-time={time}
                     className={`cursor-pointer border border-blue-800 ${
                       selectedTimes[dateString as string]?.includes(time)
                         ? "bg-gradient-to-bl from-blue-500 to-blue-200"

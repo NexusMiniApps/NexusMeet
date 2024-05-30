@@ -30,14 +30,20 @@ interface InitDataResponse {
 
 const HomePage = () => {
   const [userData, setUserData] = useState<InitData | null>(null);
+  const [loading, setLoading] = useState(true);
   const hasFetchedRef = useRef(false);
 
   useEffect(() => {
     if (hasFetchedRef.current) return;
 
-    const { initDataRaw } = retrieveLaunchParams();
-    console.log("TESTLOG");
-    console.log(initDataRaw);
+    setLoading(true);
+
+    let initDataRaw;
+    try {
+      initDataRaw = retrieveLaunchParams();
+    } catch (error) {
+      console.error("Failed to retrieve launch parameters:", error);
+    }
 
     if (initDataRaw) {
       fetch("/api/initUser", {
@@ -49,14 +55,17 @@ const HomePage = () => {
       })
         .then((response) => response.json())
         .then((data: InitDataResponse) => {
-          console.log("Success:", data);
           setUserData(data);
+          setLoading(false);
         })
         .catch((error) => {
-          console.error("Error:", error);
+          console.error("Error fetching user data:", error);
+          setLoading(false);
         });
 
       hasFetchedRef.current = true;
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -77,19 +86,21 @@ const HomePage = () => {
       <div>For development purposes only:</div>
       <div className="mt-4 rounded border p-4 shadow">
         <h2 className="text-md mb-4 font-bold">User Information</h2>
-        {userData ? (
+        {loading ? (
+          <Spinner />
+        ) : userData ? (
           <>
             <p>
-              <strong>ID:</strong> {userData.user.id}
+              <strong>ID:</strong> {userData.user?.id}
             </p>
             <p>
-              <strong>First Name:</strong> {userData.user.first_name}
+              <strong>First Name:</strong> {userData.user?.first_name}
             </p>
             <p>
-              <strong>Last Name:</strong> {userData.user.last_name}
+              <strong>Last Name:</strong> {userData.user?.last_name}
             </p>
             <p>
-              <strong>Username:</strong> {userData.user.username}
+              <strong>Username:</strong> {userData.user?.username}
             </p>
             <p>
               <strong>Chat Instance:</strong> {userData.chat_instance}
@@ -99,10 +110,10 @@ const HomePage = () => {
             </p>
             <p>
               <strong>Auth Date:</strong> {formatAuthDate(userData.auth_date)}
-            </p>{" "}
+            </p>
           </>
         ) : (
-          <Spinner />
+          <p>No Telegram Init Data.</p>
         )}
       </div>
     </main>

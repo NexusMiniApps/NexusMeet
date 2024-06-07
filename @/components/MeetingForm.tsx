@@ -9,13 +9,18 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+
+
+interface ApiResponse {
+  identifier: string;
+}
+
 
 const formSchema = z.object({
   meetingName: z.string(),
@@ -32,10 +37,26 @@ export function MeetingForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // TODO: Connect to backend for form submit
-    console.log(values);
-    router.push("/pick-dates");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await fetch("/api/createMeeting", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create meeting");
+      }
+
+      const result = await response.json() as ApiResponse;
+
+      router.push(`/pick-dates/${result.identifier}`);;
+    } catch (error) {
+      console.error("Error creating meeting:", error);
+    }
   }
 
   return (
@@ -71,8 +92,8 @@ export function MeetingForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full bg-blue-800" type="submit">
-          Submit
+        <Button className="w-full bg-blue-800" type="submit" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </form>
     </Form>

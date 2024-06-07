@@ -1,75 +1,13 @@
 "use client";
 
 import { MeetingForm } from "@/components/MeetingForm";
-import { retrieveLaunchParams } from "@tma.js/sdk";
-import { useEffect, useState, useRef } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { useInitData } from "@/lib/useInitData";
 
-interface User {
-  id: number;
-  first_name: string;
-  last_name: string;
-  username: string;
-}
+const NewMeeting = () => {
+  const { userData, loading } = useInitData();
 
-interface InitData {
-  user: User;
-  chat_instance: string;
-  chat_type: string;
-  auth_date: string;
-  message: string;
-}
-
-interface InitDataResponse {
-  message: string;
-  user: User;
-  chat_instance: string;
-  chat_type: string;
-  auth_date: string;
-}
-
-const HomePage = () => {
-  const [userData, setUserData] = useState<InitData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const hasFetchedRef = useRef(false);
-
-  useEffect(() => {
-    if (hasFetchedRef.current) return;
-
-    setLoading(true);
-
-    let initDataRaw;
-    try {
-      initDataRaw = retrieveLaunchParams();
-    } catch (error) {
-      console.error("Failed to retrieve launch parameters:", error);
-    }
-
-    if (initDataRaw) {
-      fetch("/api/initUser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ initData: initDataRaw }),
-      })
-        .then((response) => response.json())
-        .then((data: InitDataResponse) => {
-          setUserData(data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-          setLoading(false);
-        });
-
-      hasFetchedRef.current = true;
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const formatAuthDate = (auth_date: string | null) => {
+  const formatAuthDate = (auth_date: string | null | undefined) => {
     if (auth_date) {
       const timestamp = Number(auth_date);
       if (!isNaN(timestamp)) {
@@ -120,4 +58,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default NewMeeting;

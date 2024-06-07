@@ -92,9 +92,32 @@ Read more about [route handlers](https://nextjs.org/docs/app/api-reference/file-
 
 </details>
 
+<br>
 
+## API Routes:
+<strong> Follow the examples of existing route.ts files. </strong> You can use ChatGPT, but it will always default to outdated code based on the previous NextJS versions.
 
-</details>
+Key Points:
+- Use NextRequest and NextResponse imported from next/server
+    ```
+    import { NextRequest, NextResponse } from 'next/server';
+    ```
+
+- res.status needs to be in the form of a NextResponse with a JSON.stringify()
+
+    ```
+    JSON.stringify({ message: 'New user created.', user, chat_instance, chat_type, auth_date }),
+        {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+        }
+    ```
+
+- A named export is required for each HTTP method, or it will result in a 500 internal server error.
+
+    ```
+    export async function POST(req: NextRequest, res: NextResponse)
+    ```
 
 <br>
 

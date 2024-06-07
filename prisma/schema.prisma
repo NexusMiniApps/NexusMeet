@@ -40,14 +40,36 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    telegramId    BigInt    @unique
-    firstName     String
-    lastName      String?
-    username      String?
-   
-    accounts      Account[]
-    sessions      Session[]
+  id            String    @id @default(cuid())
+  telegramId    BigInt    @unique
+  firstName     String
+  lastName      String?
+  username      String?
+
+  accounts      Account[]
+  sessions      Session[]
+
+  meetings      Meeting[]
+}
+
+model Meeting {
+  id             Int           @id @default(autoincrement())
+  name           String
+  description    String?
+  createdAt      DateTime      @default(now())
+  urlIdentifier  String        @unique
+  userId         String? 
+  chatInstanceId String? 
+
+  user           User?         @relation(fields: [userId], references: [id])
+  meetingDates   MeetingDate[] @relation("MeetingMeetingDates")
+}
+
+model MeetingDate {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  meetingId String   
+  meeting   Meeting  @relation(fields: [meetingId], references: [urlIdentifier], name: "MeetingMeetingDates")
 }
 
 model VerificationToken {

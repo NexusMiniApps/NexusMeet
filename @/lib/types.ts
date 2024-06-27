@@ -6,7 +6,6 @@ export interface User {
   last_name?: string;
   username?: string;
 }
-
 export interface InitData {
   user?: User;
   chat_instance?: string;

@@ -94,7 +94,7 @@ Read more about [route handlers](https://nextjs.org/docs/app/api-reference/file-
 
 <br>
 
-## API Routes:
+## Writing API Routes:
 <strong> Follow the examples of existing route.ts files. </strong> You can use ChatGPT, but it will always default to outdated code based on the previous NextJS versions.
 
 Key Points:

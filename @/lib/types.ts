@@ -27,16 +27,7 @@ export interface MeetingData {
 export interface CreateMeetingRequest {
   meetingName: string;
   meetingDescription: string;
-  user?: {
-    id: string;
-    telegramId: bigint;
-    first_name: string;
-    last_name?: string;
-    username?: string;
-  };
-  chat_instance?: string;
-  chat_type?: string;
-  auth_date?: string;
+  userData: InitData | null,
 }
 
 export interface DateRequest {

@@ -36,7 +36,7 @@ export async function createMeeting(
         name: meetingData.meeting.name,
         description: meetingData.meeting.description,
         urlIdentifier: identifier,
-        userId: userData?.user?.id ?? undefined,
+        userId: userData?.user?.id,
         chatInstanceId: userData?.chat_instance ?? undefined,
     };
 

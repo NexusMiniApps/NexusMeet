@@ -16,28 +16,42 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import type { InitData } from "@/lib/types";
+import { Spinner } from "@/components/ui/spinner";
+
 
 interface ApiResponse {
   identifier: string;
+}
+
+interface UserDataProps {
+  userData: InitData | null;
+  loading: boolean;
+  formatAuthDate: (auth_date: string | null | undefined) => string;
 }
 
 
 const formSchema = z.object({
   meetingName: z.string(),
   meetingDescription: z.string().optional(),
+  userData: z.any(),
+
 });
 
-export function MeetingForm() {
+export function MeetingForm({userData, loading, formatAuthDate}: UserDataProps) {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       meetingName: "New Meeting",
+      meetingDescription: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    values.userData = userData;
+    
     try {
       const response = await fetch("/api/createMeeting", {
         method: "POST",
@@ -57,6 +71,13 @@ export function MeetingForm() {
     } catch (error) {
       console.error("Error creating meeting:", error);
     }
+  }
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (!userData) {
+    return <h1>No user data available</h1>;
   }
 
   return (
@@ -92,6 +113,9 @@ export function MeetingForm() {
             </FormItem>
           )}
         />
+
+        <input type="hidden" {...form.register("userData")} />
+
         <Button className="w-full bg-blue-800" type="submit" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? "Submitting..." : "Submit"}
         </Button>

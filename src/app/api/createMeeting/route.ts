@@ -15,14 +15,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   }
 
   const requestData = await req.json() as CreateMeetingRequest;
-  const { meetingName, meetingDescription, user, chat_instance, chat_type, auth_date } = requestData;
-
-  const userData: InitData = {
-    user: user,
-    chat_instance: chat_instance,
-    chat_type: chat_type,
-    auth_date: auth_date,
-  };
+  const { meetingName, meetingDescription, userData} = requestData;
 
   const meetingData: MeetingData = {
     meeting: {
